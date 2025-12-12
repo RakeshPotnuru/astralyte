@@ -1,0 +1,109 @@
+id: astralyte
+namespace: company.team
+description: Astralyte multi-agent research pipeline using Kestra AI Agents (Scout → Summarizer → Analyst → Synthesizer)
+
+tasks:
+  - id: agent_scout
+    type: io.kestra.plugin.ai.agent.AIAgent
+    description: "Agent A — Scout: find 3-5 credible sources for the topic; return JSON array"
+    systemMessage: |
+      You are Agent A (Scout). Your task is to find 3 to 5 diverse, credible sources for the user's topic
+      and return a strict JSON array of objects with keys: title, url, summary.
+      Be concise and prefer authoritative sources (academic, news, official docs, reputable blogs).
+      Return ONLY valid JSON.
+    prompt: |
+      Topic: "{{ trigger.body.topic }}"
+      Output format:
+      [
+        { "title": "string", "url": "string", "summary": "1-2 sentence summary" }
+      ]
+    provider:
+      type: io.kestra.plugin.ai.provider.GoogleGemini
+      modelName: gemini-2.5-flash
+      apiKey: "{{ secret('GEMINI_API_KEY') }}"
+    contentRetrievers:
+      - type: io.kestra.plugin.ai.retriever.TavilyWebSearch
+        apiKey: "{{ secret('TAVILY_API_KEY') }}"
+        maxResults: 6
+
+  - id: agent_summarizer
+    type: "io.kestra.plugin.ai.agent.AIAgent"
+    description: "Agent B — Summarizer: structured summaries for each source"
+    systemMessage: |
+      You are Agent B (Summarizer). For each source provided, produce a structured JSON object with keys:
+      title, url, key_points (array), claims (array), data (array), bias_or_limitations (string).
+      Return ONLY valid JSON: an array of summaries corresponding to the input sources.
+    prompt: |
+      Sources JSON:
+      {{ outputs.agent_scout.textOutput }}
+      Output format example:
+      [
+        {
+          "title": "string",
+          "url": "string",
+          "key_points": ["..."],
+          "claims": ["..."],
+          "data": ["..."],
+          "bias_or_limitations": "..."
+        }
+      ]
+    provider:
+      type: io.kestra.plugin.ai.provider.GoogleGemini
+      modelName: gemini-2.5-flash
+      apiKey: "{{ secret('GEMINI_API_KEY') }}"
+
+  - id: agent_analyst
+    type: "io.kestra.plugin.ai.agent.AIAgent"
+    description: "Agent C — Analyst: cross-source analysis, contradictions, themes, insights"
+    systemMessage: |
+      You are Agent C (Analyst). Using the provided structured summaries, identify:
+      - major_themes (array)
+      - contradictions (array of short descriptions)
+      - emerging_insights (array)
+      Return ONLY valid JSON.
+    prompt: |
+      Topic: "{{ trigger.body.topic }}"
+      Summaries:
+      {{ outputs.agent_summarizer.textOutput }}
+      Output format:
+      {
+        "major_themes": ["..."],
+        "contradictions": ["..."],
+        "emerging_insights": ["..."]
+      }
+    provider:
+      type: io.kestra.plugin.ai.provider.GoogleGemini
+      modelName: gemini-2.5-flash
+      apiKey: "{{ secret('GEMINI_API_KEY') }}"
+
+  - id: agent_synthesizer
+    type: "io.kestra.plugin.ai.agent.AIAgent"
+    description: "Agent D — Synthesizer: produce final research brief (overview, sections, implications, conclusion, citations)"
+    systemMessage: |
+      You are Agent D (Synthesizer). Create a concise, neutral research brief using the summaries and analysis.
+      The brief must be returned as valid JSON with fields:
+      overview, sections (array of {title, content}), contradictions (array), implications (array),
+      conclusion (string), sources (array of {title, url}).
+      Return ONLY valid JSON.
+    prompt: |
+      Topic: "{{ trigger.body.topic }}"
+      Summaries: {{ outputs.agent_summarizer.textOutput }}
+      Analysis: {{ outputs.agent_analyst.textOutput }}
+      Output format:
+      {
+        "overview": "string",
+        "sections": [ { "title": "string", "content": "string" } ],
+        "contradictions": ["..."],
+        "implications": ["..."],
+        "conclusion": "string",
+        "sources": [ { "title": "string", "url": "string" } ]
+      }
+    provider:
+      type: io.kestra.plugin.ai.provider.GoogleGemini
+      modelName: gemini-2.5-flash
+      apiKey: "{{ secret('GEMINI_API_KEY') }}"
+
+triggers:
+  - id: webhook
+    type: io.kestra.plugin.core.trigger.Webhook
+    key: "{{ kv('WEBHOOK_KEY') }}"
