@@ -10,22 +10,6 @@ export async function POST(request: NextRequest) {
     const namespace = process.env.KESTRA_NAMESPACE;
     const flowId = `astralyte`;
 
-    if (!webhookKey || !namespace) {
-      return NextResponse.json(
-        { error: "Kestra configuration missing. Check environment variables." },
-        { status: 500 }
-      );
-    }
-
-    if (!flowId) {
-      return NextResponse.json(
-        { error: "workflowId is required in the request body" },
-        { status: 400 }
-      );
-    }
-
-    // Trigger the Kestra workflow via webhook
-    // The webhook key in the URL should match the value in the KV store
     const kestraUrl = process.env.NEXT_PUBLIC_KESTRA_URL;
     const url = `${kestraUrl}/api/v1/main/executions/webhook/${namespace}/${flowId}/${webhookKey}`;
 

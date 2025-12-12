@@ -3,6 +3,15 @@ namespace: company.team
 description: Astralyte multi-agent research pipeline using Kestra AI Agents (Scout → Summarizer → Analyst → Synthesizer)
 
 tasks:
+  - id: update_agent_a_status
+    type: io.kestra.plugin.supabase.Update
+    apiKey: "{{ secret('SUPABASE_API_KEY') }}"
+    data:
+      agent_a_status: Pending
+    filter: id=eq.{{ trigger.body.topic_id }}
+    table: topics
+    url: "{{ secret('SUPABASE_URL') }}"
+
   - id: agent_scout
     type: io.kestra.plugin.ai.agent.AIAgent
     description: "Agent A — Scout: find 3-5 credible sources for the topic; return JSON array"
@@ -25,6 +34,17 @@ tasks:
       - type: io.kestra.plugin.ai.retriever.TavilyWebSearch
         apiKey: "{{ secret('TAVILY_API_KEY') }}"
         maxResults: 6
+
+  - id: update_after_agent_a
+    type: io.kestra.plugin.supabase.Update
+    apiKey: "{{ secret('SUPABASE_API_KEY') }}"
+    data:
+      agent_a_status: Success
+      agent_a_output: "{{ outputs.agent_scout.textOutput }}"
+      agent_b_status: Pending
+    filter: id=eq.{{ trigger.body.topic_id }}
+    table: topics
+    url: "{{ secret('SUPABASE_URL') }}"
 
   - id: agent_summarizer
     type: "io.kestra.plugin.ai.agent.AIAgent"
@@ -52,6 +72,17 @@ tasks:
       modelName: gemini-2.5-flash
       apiKey: "{{ secret('GEMINI_API_KEY') }}"
 
+  - id: update_after_agent_b
+    type: io.kestra.plugin.supabase.Update
+    apiKey: "{{ secret('SUPABASE_API_KEY') }}"
+    data:
+      agent_b_status: Success
+      agent_b_output: "{{ outputs.agent_summarizer.textOutput }}"
+      agent_c_status: Pending
+    filter: id=eq.{{ trigger.body.topic_id }}
+    table: topics
+    url: "{{ secret('SUPABASE_URL') }}"
+
   - id: agent_analyst
     type: "io.kestra.plugin.ai.agent.AIAgent"
     description: "Agent C — Analyst: cross-source analysis, contradictions, themes, insights"
@@ -75,6 +106,17 @@ tasks:
       type: io.kestra.plugin.ai.provider.GoogleGemini
       modelName: gemini-2.5-flash
       apiKey: "{{ secret('GEMINI_API_KEY') }}"
+
+  - id: update_after_agent_c
+    type: io.kestra.plugin.supabase.Update
+    apiKey: "{{ secret('SUPABASE_API_KEY') }}"
+    data:
+      agent_c_status: Success
+      agent_c_output: "{{ outputs.agent_analyst.textOutput }}"
+      agent_d_status: Pending
+    filter: id=eq.{{ trigger.body.topic_id }}
+    table: topics
+    url: "{{ secret('SUPABASE_URL') }}"
 
   - id: agent_synthesizer
     type: "io.kestra.plugin.ai.agent.AIAgent"
@@ -103,7 +145,35 @@ tasks:
       modelName: gemini-2.5-flash
       apiKey: "{{ secret('GEMINI_API_KEY') }}"
 
+  - id: update_after_agent_d
+    type: io.kestra.plugin.supabase.Update
+    apiKey: "{{ secret('SUPABASE_API_KEY') }}"
+    data:
+      agent_d_status: Success
+      agent_d_output: "{{ outputs.agent_synthesizer.textOutput }}"
+    filter: id=eq.{{ trigger.body.topic_id }}
+    table: topics
+    url: "{{ secret('SUPABASE_URL') }}"
+
+afterExecution:
+  - id: onFailure
+    runIf: "{{execution.state == 'FAILED'}}"
+    type: io.kestra.plugin.supabase.Update
+    apiKey: "{{ secret('SUPABASE_API_KEY') }}"
+    data:
+      agent_a_status: Failed
+      agent_a_output: Something went wrong!
+      agent_b_status: Failed
+      agent_b_output: Something went wrong!
+      agent_c_status: Failed
+      agent_c_output: Something went wrong!
+      agent_d_status: Failed
+      agent_d_output: Something went wrong!
+    filter: id=eq.{{ trigger.body.topic_id }}
+    table: topics
+    url: "{{ secret('SUPABASE_URL') }}"
+
 triggers:
   - id: webhook
     type: io.kestra.plugin.core.trigger.Webhook
-    key: "{{ kv('WEBHOOK_KEY') }}"
+    key: "{{ secret('WEBHOOK_KEY') }}"
