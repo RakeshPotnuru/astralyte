@@ -82,7 +82,7 @@
   --warning: hsl(38 92% 50%);
   --warning-foreground: hsl(222 47% 6%);
   --border: oklch(0.6209 0.1801 348.1385);
-  --input: oklch(0.9189 0 0);
+  --input: oklch(0.6209 0.1801 348.1385);
   --ring: oklch(0.7002 0.1597 350.7532);
   --chart-1: oklch(0.7002 0.1597 350.7532);
   --chart-2: oklch(0.8189 0.0799 212.0892);
