@@ -1,13 +1,19 @@
 "use client";
 
-import { Button } from "@/components/ui/shadcn/button";
+import { Center } from "@/components/ui/center";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupTextarea,
+} from "@/components/ui/shadcn/input-group";
 import { Spinner } from "@/components/ui/shadcn/spinner";
-import { Textarea } from "@/components/ui/shadcn/textarea";
 import { createClient } from "@/utils/supabase/client";
-import { SendIcon } from "lucide-react";
+import { ArrowUpIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import Starters from "./starters";
 
 export default function Dashboard() {
   const [topic, setTopic] = useState("");
@@ -15,16 +21,19 @@ export default function Dashboard() {
 
   const router = useRouter();
 
-  const triggerKestraFlow = async () => {
-    if (!topic) return;
+  const triggerKestraFlow = async (topicOverride?: string) => {
+    const activeTopic = topicOverride || topic;
+    if (!activeTopic) return;
 
     try {
       setIsLoading(true);
+      toast.info("Initialising research flow...");
+
       const client = createClient();
       const { data, error } = await client
         .from("topics")
         .insert({
-          topic,
+          topic: activeTopic,
         })
         .select("id")
         .single();
@@ -43,14 +52,14 @@ export default function Dashboard() {
         },
         body: JSON.stringify({
           inputs: {
-            topic,
+            topic: activeTopic,
             topic_id: data.id,
           },
         }),
         cache: "no-store",
       });
 
-      toast.info("Initialising research flow...");
+      toast.success("Research flow initialised successfully.");
       router.push(`/${data.id}`);
     } catch {
       toast.error("Failed to trigger kestra flow. Please try again.");
@@ -60,19 +69,34 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
-      <Textarea
-        value={topic}
-        onChange={(e) => setTopic(e.target.value)}
-        placeholder="Enter your topic (min 10 characters)"
-        required
-      />
-      <Button
-        onClick={triggerKestraFlow}
-        disabled={isLoading || !topic || topic.trim().length < 10}
-      >
-        {isLoading ? <Spinner /> : <SendIcon />}
-      </Button>
-    </div>
+    <Center className="h-[calc(100dvh-180px)]">
+      <div className="md:w-[80%] lg:w-[60%] space-y-40">
+        <h1 className="text-6xl font-bold text-center">
+          What&apos;s on your mind?
+        </h1>
+        <div className="space-y-6">
+          <Starters onClick={triggerKestraFlow} />
+          <InputGroup>
+            <InputGroupTextarea
+              placeholder="Enter your topic (min 10 characters)"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+            />
+            <InputGroupAddon align="block-end">
+              <InputGroupButton
+                variant="default"
+                className="rounded-md shadow ml-auto"
+                size="icon-xs"
+                onClick={() => triggerKestraFlow()}
+                disabled={isLoading || !topic || topic.trim().length < 10}
+              >
+                {isLoading ? <Spinner /> : <ArrowUpIcon />}
+                <span className="sr-only">Send</span>
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+        </div>
+      </div>
+    </Center>
   );
 }

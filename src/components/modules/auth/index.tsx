@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
 import { Spinner } from "@/components/ui/shadcn/spinner";
 import { createClient } from "@/utils/supabase/client";
+import { MailIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -35,7 +36,7 @@ export default function Auth() {
   };
 
   return (
-    <Center className="min-h-screen px-10 md:px-20 text-center flex flex-col gap-10 relative -mt-20">
+    <Center className="min-h-screen px-5 md:px-20 text-center flex flex-col gap-10 relative -mt-40">
       <h1 className="font-black text-6xl md:text-8xl">
         Multi-Agent <br />
         Research Assistant
@@ -48,13 +49,18 @@ export default function Auth() {
           </p>
         ) : (
           <div className="gap-2 flex flex-row w-full">
-            <Input
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              placeholder="Your Email"
-              required
-              disabled={isLoading}
-            />
+            <div className="relative w-full">
+              <Input
+                onChange={(e) => setEmail(e.target.value)}
+                className="peer ps-9"
+                placeholder="Enter your email"
+                type="email"
+                disabled={isLoading}
+              />
+              <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                <MailIcon aria-hidden="true" size={16} />
+              </div>
+            </div>
             <Button onClick={auth} disabled={isLoading}>
               {isLoading && <Spinner />} Get Started
             </Button>

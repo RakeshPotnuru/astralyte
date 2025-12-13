@@ -20,6 +20,10 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -71,8 +75,12 @@
   --muted-foreground: oklch(0.5795 0 0);
   --accent: oklch(0.9195 0.0801 87.667);
   --accent-foreground: oklch(0.3211 0 0);
-  --destructive: oklch(0.7091 0.1697 21.9551);
-  --destructive-foreground: oklch(1 0 0);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --success: hsl(142 76% 45%);
+  --success-foreground: hsl(210 40% 98%);
+  --warning: hsl(38 92% 50%);
+  --warning-foreground: hsl(222 47% 6%);
   --border: oklch(0.6209 0.1801 348.1385);
   --input: oklch(0.9189 0 0);
   --ring: oklch(0.7002 0.1597 350.7532);
@@ -131,8 +139,12 @@
   --muted-foreground: oklch(0.7794 0.0803 4.133);
   --accent: oklch(0.6699 0.0988 356.9762);
   --accent-foreground: oklch(0.9306 0.0197 349.0785);
-  --destructive: oklch(0.6702 0.1806 350.3599);
-  --destructive-foreground: oklch(0.2497 0.0305 234.1628);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --success: hsl(142 76% 45%);
+  --success-foreground: hsl(210 40% 98%);
+  --warning: hsl(38 92% 50%);
+  --warning-foreground: hsl(222 47% 6%);
   --border: oklch(0.3907 0.0399 242.2181);
   --input: oklch(0.3093 0.0305 232.0027);
   --ring: oklch(0.6998 0.0896 201.8672);
@@ -182,6 +194,16 @@
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
   }
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: var(--letter-spacing);
+}
+
+@layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
