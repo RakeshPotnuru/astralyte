@@ -2,6 +2,7 @@
 
 import { Tables } from "@/types/supabase";
 import { createClient } from "@/utils/supabase/client";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import AgentSection from "./agent-section";
 import AgentA from "./agents/agent-a";
@@ -25,27 +26,29 @@ export default function Topic({
 
   useEffect(() => {
     const client = createClient();
+    let channel: RealtimeChannel;
 
-    const channel = client
-      .channel(`topic:${data.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "topics",
-          filter: `id=eq.${data.id}`,
-        },
-        (payload) => {
-          setData(payload.new as Tables<"topics">);
-        }
-      )
-      .subscribe();
+    const setupRealtime = async () => {
+      await client.realtime.setAuth();
+
+      channel = client
+        .channel(`topic:${serverTopic.id}`, {
+          config: { private: true },
+        })
+        .on("broadcast", { event: "UPDATE" }, ({ payload }) => {
+          setData(payload.record as Tables<"topics">);
+        })
+        .subscribe();
+    };
+
+    setupRealtime();
 
     return () => {
-      client.removeChannel(channel);
+      if (channel) {
+        client.removeChannel(channel);
+      }
     };
-  }, [data.id]);
+  }, [serverTopic.id]);
 
   const regex = /```json\n([\s\S]*?)```/;
   const agentAOutput = JSON.parse(
