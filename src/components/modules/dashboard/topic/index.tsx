@@ -17,30 +17,35 @@ import {
 } from "./types";
 
 export default function Topic({
-  serverSideTopic,
+  serverTopic,
 }: {
-  serverSideTopic: Tables<"topics">;
+  serverTopic: Tables<"topics">;
 }) {
-  const [data, setData] = useState(serverSideTopic);
+  const [data, setData] = useState(serverTopic);
 
   useEffect(() => {
     const client = createClient();
 
-    client
-      .channel("room1")
+    const channel = client
+      .channel(`topic:${data.id}`)
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "topics" },
-        (payload: { new: Tables<"topics"> }) => {
-          setData(payload.new);
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "topics",
+          filter: `id=eq.${data.id}`,
+        },
+        (payload) => {
+          setData(payload.new as Tables<"topics">);
         }
       )
       .subscribe();
 
     return () => {
-      client.channel("room1").unsubscribe();
+      client.removeChannel(channel);
     };
-  }, []);
+  }, [data.id]);
 
   const regex = /```json\n([\s\S]*?)```/;
   const agentAOutput = JSON.parse(
@@ -64,15 +69,27 @@ export default function Topic({
       <h1 className="text-4xl font-semibold">{data.topic}</h1>
       <div className="space-y-6 mt-8">
         <AgentSection agent={AGENTS[0]} status={data.agent_a_status}>
-          {data.agent_a_output && <AgentA output={agentAOutput} />}
+          {data.agent_a_status === "Success" ? (
+            <AgentA output={agentAOutput} />
+          ) : (
+            data.agent_a_output
+          )}
         </AgentSection>
 
         <AgentSection agent={AGENTS[1]} status={data.agent_b_status}>
-          {data.agent_b_output && <AgentB output={agentBOutput} />}
+          {data.agent_b_status === "Success" ? (
+            <AgentB output={agentBOutput} />
+          ) : (
+            data.agent_b_output
+          )}
         </AgentSection>
 
         <AgentSection agent={AGENTS[2]} status={data.agent_c_status}>
-          {data.agent_c_output && <AgentC output={agentCOutput} />}
+          {data.agent_c_status === "Success" ? (
+            <AgentC output={agentCOutput} />
+          ) : (
+            data.agent_c_output
+          )}
         </AgentSection>
 
         <AgentSection
@@ -80,7 +97,11 @@ export default function Topic({
           status={data.agent_d_status}
           defaultOpen
         >
-          {data.agent_d_output && <AgentD output={agentDOutput} />}
+          {data.agent_d_status === "Success" ? (
+            <AgentD output={agentDOutput} />
+          ) : (
+            data.agent_d_output
+          )}
         </AgentSection>
       </div>
     </div>

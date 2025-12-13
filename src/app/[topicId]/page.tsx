@@ -42,7 +42,7 @@ export default async function page({
           </EmptyContent>
         </Empty>
       ) : (
-        <Topic serverSideTopic={data} />
+        <Topic serverTopic={data} />
       )}
     </div>
   );
