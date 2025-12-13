@@ -76,7 +76,7 @@ WEBHOOK_KEY=
 
 ## Supabase
 
-1. Create new supsbase project
+1. Create new Supabase project
 2. Create new table with this query:
 
 ```sql
@@ -101,7 +101,7 @@ create table public.topics (
 
 3. Use this url for magic links:
 
-```
+```text
 {{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email
 
 e.g: <p><a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email">Confirm your mail</a></p>

@@ -45,7 +45,7 @@ export default function Topic({
     return () => {
       client.removeChannel(channel);
     };
-  }, [data, setData]);
+  }, [data.id]);
 
   const regex = /```json\n([\s\S]*?)```/;
   const agentAOutput = JSON.parse(
@@ -69,7 +69,7 @@ export default function Topic({
       <h1 className="text-4xl font-semibold">{data.topic}</h1>
       <div className="space-y-6 mt-8">
         <AgentSection agent={AGENTS[0]} status={data.agent_a_status}>
-          {data.agent_a_output && data.agent_a_status === "Success" ? (
+          {data.agent_a_status === "Success" ? (
             <AgentA output={agentAOutput} />
           ) : (
             data.agent_a_output
@@ -77,7 +77,7 @@ export default function Topic({
         </AgentSection>
 
         <AgentSection agent={AGENTS[1]} status={data.agent_b_status}>
-          {data.agent_b_output && data.agent_b_status === "Success" ? (
+          {data.agent_b_status === "Success" ? (
             <AgentB output={agentBOutput} />
           ) : (
             data.agent_b_output
@@ -85,7 +85,7 @@ export default function Topic({
         </AgentSection>
 
         <AgentSection agent={AGENTS[2]} status={data.agent_c_status}>
-          {data.agent_c_output && data.agent_c_status === "Success" ? (
+          {data.agent_c_status === "Success" ? (
             <AgentC output={agentCOutput} />
           ) : (
             data.agent_c_output
@@ -97,7 +97,7 @@ export default function Topic({
           status={data.agent_d_status}
           defaultOpen
         >
-          {data.agent_d_output && data.agent_d_status === "Success" ? (
+          {data.agent_d_status === "Success" ? (
             <AgentD output={agentDOutput} />
           ) : (
             data.agent_d_output
