@@ -29,10 +29,10 @@ export default function Starters({
             }
           }}
         >
-          <Card className="p-3 *:p-0 hover:bg-card/80">
+          <Card className="p-3 *:p-0 hover:bg-card/80 h-full flex flex-col">
             <CardContent>{starter}</CardContent>
-            <CardFooter>
-              <Button size={"icon-xs"} className="ml-auto">
+            <CardFooter className="mt-auto ml-auto">
+              <Button size={"icon-xs"}>
                 <ArrowUpIcon />
               </Button>
             </CardFooter>

@@ -17,8 +17,12 @@ export default function AgentB({ output }: { output: AgentBOutput[] }) {
   return (
     <Accordion type="multiple" className="space-y-3">
       {output.map((source, index) => (
-        <AccordionItem key={index} value={`item-${index}`}>
-          <Card className="px-4 overflow-hidden bg-accent/5 hover:border-primary/50 transition-colors last:border-b">
+        <AccordionItem
+          key={index}
+          value={`item-${index}`}
+          className="border-b-0"
+        >
+          <Card className="px-4 overflow-hidden bg-accent/5 hover:border-primary/50 transition-colors">
             <AccordionTrigger className="p-0 hover:no-underline">
               <div className="flex items-center gap-3 text-left">
                 <span className="text-lg">📄</span>
