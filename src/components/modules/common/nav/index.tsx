@@ -5,7 +5,7 @@ import History from "./history";
 import Logout from "./logout";
 import ThemeToggle from "./theme-toggle";
 
-export default function Nav({ user }: { user: User | null }) {
+export default function Nav({ user }: { user?: User | null }) {
   return (
     <nav className="flex justify-between items-center p-4 px-6 md:px-10 z-50 relative">
       <Link href="/">

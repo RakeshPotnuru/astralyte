@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const inputs = requestData.inputs || {};
     const webhookKey = process.env.KESTRA_WEBHOOK_KEY;
     const namespace = process.env.KESTRA_NAMESPACE;
-    const flowId = `astralyte`;
+    const flowId = process.env.KESTRA_FLOW_ID;
 
     const kestraUrl = process.env.NEXT_PUBLIC_KESTRA_URL;
     const url = `${kestraUrl}/api/v1/main/executions/webhook/${namespace}/${flowId}/${webhookKey}`;
