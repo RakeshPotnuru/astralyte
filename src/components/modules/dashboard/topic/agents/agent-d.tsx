@@ -7,9 +7,15 @@ import {
   ExternalLinkIcon,
   LightbulbIcon,
 } from "lucide-react";
-import type { AgentDOutput } from "../types";
+import type { AgentDOutput, Sources } from "../types";
 
-export default function AgentD({ output }: { output: AgentDOutput }) {
+export default function AgentD({
+  output,
+  sources,
+}: {
+  output: AgentDOutput;
+  sources: Sources[];
+}) {
   return (
     <div className="space-y-6">
       <Card className="p-5 bg-linear-to-br from-primary/10 to-transparent border-primary/20">
@@ -96,7 +102,7 @@ export default function AgentD({ output }: { output: AgentDOutput }) {
             {output.sources.map((source, i) => (
               <a
                 key={i}
-                href={source.url}
+                href={sources[i].metadata.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted text-sm text-foreground hover:bg-primary/20 hover:text-primary transition-colors"

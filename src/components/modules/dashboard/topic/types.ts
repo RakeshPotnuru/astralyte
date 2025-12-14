@@ -4,13 +4,11 @@ export type AgentStatus = Tables<"topics">["agent_a_status"];
 
 export interface AgentAOutput {
   title: string;
-  url: string;
   summary: string;
 }
 
 export interface AgentBOutput {
   title: string;
-  url: string;
   key_points: string[];
   claims: string[];
   data: string[];
@@ -34,8 +32,15 @@ export interface AgentDOutput {
   conclusion: string;
   sources: {
     title: string;
-    url: string;
   }[];
+}
+
+export interface Sources {
+  content: string;
+  metadata: {
+    url: string;
+    score: string;
+  };
 }
 
 export interface AgentInfo {

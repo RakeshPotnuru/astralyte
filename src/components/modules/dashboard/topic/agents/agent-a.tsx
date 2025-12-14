@@ -1,8 +1,14 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/shadcn/card";
 import { ExternalLinkIcon } from "lucide-react";
-import type { AgentAOutput } from "../types";
+import type { AgentAOutput, Sources } from "../types";
 
-export default function AgentA({ output }: { output: AgentAOutput[] }) {
+export default function AgentA({
+  output,
+  sources,
+}: {
+  output: AgentAOutput[];
+  sources: Sources[];
+}) {
   return (
     <div className="space-y-3">
       {output.map((source, index) => (
@@ -15,13 +21,15 @@ export default function AgentA({ output }: { output: AgentAOutput[] }) {
             <div className="flex-1 min-w-0">
               <h4 className="font-medium truncate">{source.title}</h4>
               <a
-                href={source.url}
+                href={sources[index].metadata.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline mt-1"
               >
                 <ExternalLinkIcon className="w-3 h-3" />
-                <span className="truncate max-w-[200px]">{source.url}</span>
+                <span className="truncate max-w-[200px]">
+                  {sources[index].metadata.url}
+                </span>
               </a>
             </div>
           </CardContent>

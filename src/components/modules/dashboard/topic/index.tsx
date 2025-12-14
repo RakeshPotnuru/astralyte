@@ -15,6 +15,7 @@ import {
   AgentCOutput,
   AgentDOutput,
   AGENTS,
+  Sources,
 } from "./types";
 
 export default function Topic({
@@ -67,13 +68,23 @@ export default function Topic({
     data.agent_d_output?.match(regex)?.[1] || "{}"
   ) as AgentDOutput;
 
+  const sources = (JSON.parse(data.sources || "[]") as Sources[]).map(
+    (source) => ({
+      ...source,
+      metadata: {
+        ...source.metadata,
+        url: decodeURIComponent(source.metadata.url),
+      },
+    })
+  );
+
   return (
     <div className="space-y-6">
       <h1 className="text-4xl font-semibold">{data.topic}</h1>
       <div className="space-y-6 mt-8">
         <AgentSection agent={AGENTS[0]} status={data.agent_a_status}>
           {data.agent_a_status === "Success" ? (
-            <AgentA output={agentAOutput} />
+            <AgentA output={agentAOutput} sources={sources} />
           ) : (
             data.agent_a_output
           )}
@@ -81,7 +92,7 @@ export default function Topic({
 
         <AgentSection agent={AGENTS[1]} status={data.agent_b_status}>
           {data.agent_b_status === "Success" ? (
-            <AgentB output={agentBOutput} />
+            <AgentB output={agentBOutput} sources={sources} />
           ) : (
             data.agent_b_output
           )}
@@ -101,7 +112,7 @@ export default function Topic({
           defaultOpen
         >
           {data.agent_d_status === "Success" ? (
-            <AgentD output={agentDOutput} />
+            <AgentD output={agentDOutput} sources={sources} />
           ) : (
             data.agent_d_output
           )}
