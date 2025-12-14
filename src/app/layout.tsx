@@ -1,8 +1,9 @@
 import Nav from "@/components/modules/common/nav";
+import { Toaster } from "@/components/ui/shadcn/sonner";
+import Providers from "@/lib/providers";
 import { createClient } from "@/utils/supabase/server";
 import type { Metadata } from "next";
 import "./globals.css";
-import Providers from "@/lib/providers";
 
 export const metadata: Metadata = {
   title: "Astralyte",
@@ -25,6 +26,7 @@ export default async function RootLayout({
         <Providers>
           <Nav user={user} />
           <main className="p-5 md:p-10">{children}</main>
+          <Toaster />
         </Providers>
       </body>
     </html>

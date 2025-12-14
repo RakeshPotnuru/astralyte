@@ -51,6 +51,7 @@ export type Database = {
           agent_d_status: Database["public"]["Enums"]["agent_status"]
           created_at: string
           id: string
+          sources: string | null
           topic: string
           updated_at: string
           user_id: string
@@ -66,6 +67,7 @@ export type Database = {
           agent_d_status?: Database["public"]["Enums"]["agent_status"]
           created_at?: string
           id?: string
+          sources?: string | null
           topic: string
           updated_at?: string
           user_id?: string
@@ -81,6 +83,7 @@ export type Database = {
           agent_d_status?: Database["public"]["Enums"]["agent_status"]
           created_at?: string
           id?: string
+          sources?: string | null
           topic?: string
           updated_at?: string
           user_id?: string

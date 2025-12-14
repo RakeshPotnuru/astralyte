@@ -27,7 +27,6 @@ export default function Dashboard() {
 
     try {
       setIsLoading(true);
-      toast.info("Initialising research flow...");
 
       const client = createClient();
       const { data, error } = await client
@@ -59,10 +58,9 @@ export default function Dashboard() {
         cache: "no-store",
       });
 
-      toast.success("Research flow initialised successfully.");
       router.push(`/${data.id}`);
     } catch {
-      toast.error("Failed to trigger kestra flow. Please try again.");
+      // ignore
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +73,15 @@ export default function Dashboard() {
           What&apos;s on your mind?
         </h1>
         <div className="space-y-6">
-          <Starters onClick={triggerKestraFlow} />
+          <Starters
+            onClick={(topic) =>
+              toast.promise(triggerKestraFlow(topic), {
+                loading: "Initialising research flow...",
+                success: "Research flow initialised successfully.",
+                error: "Failed to trigger kestra flow. Please try again.",
+              })
+            }
+          />
           <InputGroup>
             <InputGroupTextarea
               placeholder="Enter your topic (min 10 characters)"
@@ -87,7 +93,13 @@ export default function Dashboard() {
                 variant="default"
                 className="rounded-md shadow ml-auto"
                 size="icon-xs"
-                onClick={() => triggerKestraFlow()}
+                onClick={() =>
+                  toast.promise(triggerKestraFlow(), {
+                    loading: "Initialising research flow...",
+                    success: "Research flow initialised successfully.",
+                    error: "Failed to trigger kestra flow. Please try again.",
+                  })
+                }
                 disabled={isLoading || !topic || topic.trim().length < 10}
               >
                 {isLoading ? <Spinner /> : <ArrowUpIcon />}

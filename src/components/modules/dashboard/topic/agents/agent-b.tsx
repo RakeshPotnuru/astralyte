@@ -11,9 +11,15 @@ import {
 } from "@/components/ui/shadcn/alert";
 import { Card } from "@/components/ui/shadcn/card";
 import { AlertTriangleIcon, ExternalLinkIcon } from "lucide-react";
-import type { AgentBOutput } from "../types";
+import type { AgentBOutput, Sources } from "../types";
 
-export default function AgentB({ output }: { output: AgentBOutput[] }) {
+export default function AgentB({
+  output,
+  sources,
+}: {
+  output: AgentBOutput[];
+  sources: Sources[];
+}) {
   return (
     <Accordion type="multiple" className="space-y-3">
       {output.map((source, index) => (
@@ -29,14 +35,16 @@ export default function AgentB({ output }: { output: AgentBOutput[] }) {
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium truncate">{source.title}</h4>
                   <a
-                    href={source.url}
+                    href={sources[index].metadata.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <ExternalLinkIcon className="w-3 h-3" />
-                    <span className="truncate max-w-[200px]">{source.url}</span>
+                    <span className="truncate max-w-[200px]">
+                      {sources[index].metadata.url}
+                    </span>
                   </a>
                 </div>
               </div>
