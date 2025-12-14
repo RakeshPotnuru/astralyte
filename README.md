@@ -8,7 +8,7 @@ A single topic input triggers a 4-stage pipeline—scouting, summarizing, analyz
 ## 🛠️ Technologies Used
 
 - Kestra - Workflow Orchestration
-- Cline - Agent-driven development assistant
+- Cline - Agent-driven development and GitHub issue assistant
 - CodeRabbit - PR reviews & code quality
 - Next.js - Full-stack framework
 - Vercel - Deployment
