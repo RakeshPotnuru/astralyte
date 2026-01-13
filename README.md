@@ -18,7 +18,7 @@ A single topic input triggers a 4-stage pipeline—scouting, summarizing, analyz
 1. Clone repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/astralyte
+git clone https://github.com/RakeshPotnuru/astralyte
 cd astralyte
 ```
 
